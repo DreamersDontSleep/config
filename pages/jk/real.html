@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+         .btn{
+             padding:4px 10px;
+             background:linear-gradient(rgba(5, 38, 89, 0.6),rgba(5, 38, 89, 0.9));
+             color:#FFF;
+             float:right;
+             margin-left:10px;
+             font-size: 16px;
+             position:relative;
+             border-radius:5px;
+         }
+        .info{
+            position:absolute;
+            width:530px;
+            height:180px;
+            background:rgba(5, 38, 89, 0.8);
+            top:30px;
+            right:0;
+            font-size: 12px;
+            padding:10px;
+            display:none;
+            border-radius:5px;
+        }
+        .myselect{
+            width:140px !important;
+        }
+        .myselect2{
+            width:60px !important;
+        }
+        .mini-mask{
+            //display: none !important;
+        }
+        #operdiv{position: absolute; right: 20px; top: 5px; z-index: 199; font-size: 12px;}
+        .close-img{width:14px;position:absolute;top:5px;right:5px;z-index: 99;}
+        .mini-checkboxlist{font-size: 15px !important; }
+    </style>
+    <link rel="stylesheet" href="themes/self/rangeslider.css" type="text/css">
+    <script src="../../jslib/miniui/boot.js"></script>
+    <script type="text/javascript" src="js/toolbar.js"></script>
+
+    <link href="../../jslib/miniui/themes/blue2003/skin.css">
+    <script type="text/javascript" src="js/mapbaidu/bdtowgs84.js"></script>
+    <title>地图展示</title>
+</head>
+<body>
+<div style=" height: 40px; background: #c6e6bd; border: 1px solid #eee; padding-left: 4px; font-size: 14px; line-height: 39px;">
+    <div style="float: left; cursor: pointer; margin-left:10px; margin-top: 5px; height: 30px;" id="toolsDiv"></div>
+    <div style="float: left; width: 1px; height: 20px; background: #b3cc6f; margin: 10px 15px 10px 0px;"></div>
+    <div style="float: left; font-size: 15px;"> </div>
+    <a style="float: left; height: 30px !important; text-decoration: none;" height="30" href="javascript:void(0)" onclick="PageMap.funAddDzwlInfo()"/>电子围栏</a>
+    <div style="float: left; width: 1px; height: 20px; background: #b3cc6f; margin: 10px 15px 10px 10px;"></div>
+    <div style="float: left; font-size: 15px;"> </div>
+    <div id="cklist" class="mini-checkboxlist" repeatItems="3" repeatLayout="table" style="cursor: pointer;float: left; font-size: 14px;"  textField="text" valueField="id" onvaluechanged="PageMap.funCkListchangedInfo()"></div>
+    <div id="statelist" class="mini-checkboxlist" repeatItems="2" repeatLayout="table" style="cursor: pointer;float: left; font-size: 14px;"  textField="text" valueField="id" onvaluechanged="PageMap.funStateListchangedInfo()"></div>
+
+    <div style="float: left; width: 1px; height: 20px; background: #b3cc6f; margin: 10px 15px;"></div>
+    <div style="float: left; font-size: 15px; ">船舶：<span id="shipcnt" style="font-weight: bold; color: red;">0</span></div>
+</div>
+<div id="operdiv">
+    <span class="btn" >轨迹回放
+        <div class="info">
+            <img src="js/mapbaidu/img/map-close-1.png" class="close-img">
+             <div class="info-top">
+                <span class="">设备号:</span>
+                 <input id="in11" name="in11" class="mini-combobox" style="width: 175px;"  onvaluechanged="PageMap.funDevChanged(1)"  textField="name" valueField="name" emptyText="请选择..."  allowInput="true" showNullItem="true" nullItemText="请选择..."/>
+                <span class="" style="padding-left: 15px;">船号:</span>
+                 <input id="in12" name="in12" class="mini-combobox" style="width: 175px;"  onvaluechanged="PageMap.funShipChanged(1)" textField="id" valueField="name" emptyText="请选择..."  allowInput="true" showNullItem="true" nullItemText="请选择..."/>
+
+                 <!--<input id="speed" name="speed" class="mini-combobox myselect2"  textField="name" valueField="name" emptyText="请选择..." />-->
+                 <!--<select class="myselect" style="width: 60px !important; height: 25px;" id="speed">
+                     <option>0.5秒/条</option>
+                     <option selected>1秒/条</option>
+                     <option>2秒/条</option>
+                     <option>3秒/条</option>
+                 </select>-->
+                 <p/>
+                 <span class="">时间段:</span>
+                 <input name="in13" id="in13" class="mini-datepicker" style="width: 175px;"  valueType="string"   format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true" allowSort="true"  nullValue="null"  emptyText="开始时间" allowInput="false"/>
+                <span class="" style="padding: 0 20px;">-</span>
+                 <input name="in14" id="in14" class="mini-datepicker" style="width: 175px;" valueType="string"  format="yyyy-MM-dd H:mm:ss"  timeFormat="H:mm:ss" showTime="true" allowSort="true"  nullValue="null"  emptyText="开始时间" allowInput="false"/>
+                 <span class="" style="padding-left: 5px;"></span>
+               <button  onclick="PageMap.funSearchHis()" style="margin: 0 3px; width: 60px; height: 25px;" >回放</button>
+                 <!-- <button onclick="PageMap.funResetSearch()" style="margin: 0 3px; width: 50px;">重置</button>-->
+
+                 <p/>
+                  <input id="bncs_select" type="range" value="0" onmouseup="PageMap.funSliderChange()" onmousedown="PageMap.funSliderKeyDown()" value="0" min="0"
+                         max="100" data-rangeslider style="width:480px;">
+                 <p/>
+                 <input type="button" value="播放" onclick="PageMap.funPlay()"/>
+                 <input type="button" value="暂停" onclick="PageMap.funParse()"/>
+                 <input type="button" value="停止" onclick="PageMap.funStop()"/>
+                 <input type="button" value="重播" onclick="PageMap.funRePlay()"/>
+                 <input type="button" value="清空" onclick="PageMap.funHisClear()"/>
+                 <input type="button" value="监控" onclick="PageMap.funHisReal()"/>
+
+                 <span class="" style="padding-left: 15px;">&nbsp;速度：</span>
+                 <input type="button" value="慢" onclick="mini.get('speed').setValue(mini.get('speed').getValue() - 50)"/>
+                 <input id="speed" name="speed" changeOnMousewheel="false" class="mini-spinner myselect2"  minValue="50" maxValue="1000000" />
+                 <input type="button" value="快" onclick="mini.get('speed').setValue(mini.get('speed').getValue() + 50)"/>
+            </div>
+            <div class="info-middle"></div>
+            <div class="info-bottom"></div>
+        </div>
+    </span>
+    <span class="btn" id="spanreal">船舶监控
+        <div class="info" style="height: 240px; width: 720px;">
+            <img src="js/mapbaidu/img/map-close-1.png" class="close-img">
+            <div class="info-top">
+                <span class="">设备号:</span>
+                <input id="in01" class="mini-combobox" style="width: 80px;" textField="name" onvaluechanged="PageMap.funDevChanged(0)" valueField="name" emptyText="请选择..."  allowInput="true" showNullItem="true" nullItemText="请选择..."/>
+                <span class="" style="padding-left: 5px;">船号:</span>
+                <input id="in02" class="mini-combobox" style="width: 120px;" textField="id" onvaluechanged="PageMap.funShipChanged(0)" valueField="name" emptyText="请选择..."  allowInput="true" showNullItem="true" nullItemText="请选择..."/>
+                <span class="" style="padding-left: 5px;">状态:</span>
+                <input id="in03" class="mini-combobox"  style="width: 70px;" textField="name" valueField="id" emptyText="请选择..."  allowInput="true" showNullItem="true" nullItemText="请选择..."/>
+                <span class="" style="padding-left: 5px;">任务单号:</span>
+                <input name="in04" id="in04" class="mini-textbox" emptyText="任务单号"  style="width:120px;"/>
+                <span class="" style="padding-left: 5px;">&nbsp;</span>
+                <button  onclick="PageMap.funSearchRealInfo()">查询</button>
+                <button onclick="PageMap.funResetSearch()">重置</button>
+            </div>
+            <div class="info-middle" style="padding-top: 10px; margin-bottom:10px;">
+                <div id="flowGrid" class="mini-datagrid"
+                     idField="id" allowResize="false" allowAlternating="true" onrowclick="PageMap.funRealRowClick" virtualScroll="true" showPager="false" sortMode="client" style="height: 205px; width: 718px;">
+                <div property="columns">
+                    <div type="indexcolumn" headerAlign="center"  width="40">序号</div>
+					 <div field="shipNo" width="120" headerAlign="center" allowSort="true">船号码</div>
+					 <div field="devId" width="80" headerAlign="center" allowSort="true">设备号</div>
+					 <div field="online" width="80" headerAlign="center" allowSort="true"  renderer="PageMap.funDealOnlineInfo">在线状态</div>
+					 <div field="gpsTime" width="120" headerAlign="center" allowSort="true">GPS时间</div>
+					 <div field="speed" width="80" headerAlign="center" allowSort="true">速度</div>
+                </div>
+            </div>
+
+            </div>
+            <div class="info-bottom"></div>
+        </div>
+    </span>
+</div>
+<div id="allmap"></div>
+</body>
+
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=94iK6uYDWx7AV4FbrPaQDtRp8uBHWIoA"></script>
+<script type="text/javascript" src="js/real.js"></script>
+<script type="text/javascript" src="js/mapbaidu/DistanceTool_min.js"></script>
+<script type="text/javascript" src="js/mapbaidu/RectangleZoom_min.js"></script>
+<script type="text/javascript" src="js/mapbaidu/DrawingManager_min.js"></script>
+<script type="text/javascript" src="js/mapbaidu/BMapLib_GeoUtils.js"></script>
+<script type="text/javascript" src="js/mapbaidu/AreaRestriction_min.js"></script>
+</html>
+

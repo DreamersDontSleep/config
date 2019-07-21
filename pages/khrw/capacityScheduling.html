@@ -1,0 +1,137 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script src="../../jslib/miniui/boot.js"></script>
+    <script type="text/javascript" src="js/capcityScheduling.js"></script>
+    <title></title>
+    <style>
+        .Blue_Button {color:#3399ff;text-decoration:none; cursor: pointer;};
+    </style>
+</head>
+<body>
+<div class="mini-layout" style="width: 100%;height: 100%;" allowResize="false">
+    <div title="center" region="center" allowResize="false" showSplit="true" showSplitIcon="false" allowUnselect="false" style="border:0 none;">
+        <div class="left" title="生成调度结果" showHeader="true" style="width: 49%;float: left;height: 100%;">
+            <div class="mini-toolbar" style="border:0;padding:0px;height: 20px;line-height: 20px;">
+                客户订单
+            </div>
+            <div class="mini-toolbar" style="border-bottom:0;padding:0px;" id="orderListForm">
+                <input id="queryParamFlag" name="queryParamFlag" value="1" class="mini-hidden" />
+                <input id="orderListKey" name="key" class="mini-textbox" emptyText="请输入查询内容" style="width:150px;" />
+                <a class="mini-button" iconCls="icon-search" onclick="CapcitySchedul.funSearchOrderGrid()" plain="true"><label>查询</label></a>
+                <label style="font-size: 12px;color: #444;vertical-align: middle;"><input style="vertical-align: middle;" onchange="CapcitySchedul.funSearchOrderGrid()" type="checkbox" id="checkOrderFlag" name="orderFlag" value="1" hideFocus/>已调度完成订单</label>
+            </div>
+            <div class="mini-fit">
+                <div id="orderGrid" class="mini-datagrid"
+                      idField="id" allowResize="false"
+                      onselectionchanged="CapcitySchedul.funOnSelectionChanged" showPager="true"
+                     pagesize="10" sizeList="[10,30,50,100]" allowAlternating="false"  sortMode="client" style="height: 100%;">
+                    <div property="columns">
+                        <div type="checkcolumn" width="30">选择</div>
+                        <div type="indexcolumn" headerAlign="center" width="30">序号</div>
+                        <div field="customerName" width="100" headerAlign="center" allowSort="true">客户名称</div>
+                        <div field="leftWeight" width="80" headerAlign="center" allowSort="true">余调吨位</div>
+                        <div field="taskNo" width="120" headerAlign="center" allowSort="true">流向任务单号</div>
+                        <div field="flowName" width="120" headerAlign="center" allowSort="true">流向名称</div>
+                        <div field="goodsName" width="80" headerAlign="center" allowSort="true">货物名称</div>
+                        <div field="shipSuggestUnitPrice" width="80" headerAlign="center" allowSort="true">参考运价</div>
+                        <div field="loadingTime" width="120" headerAlign="center" allowSort="true" renderer="PageMain.funFromDateInfo">装货时间</div>
+                        <div field="startPortName" width="80" headerAlign="center" allowSort="true">装货点</div>
+                        <div field="endPortName" width="80" headerAlign="center" allowSort="true">卸货点</div>
+                        <!-- <div field="goodsType" width="120" headerAlign="center" allowSort="true">货物类型</div> -->
+                        <div field="sailingArea" width="120" headerAlign="center" allowSort="true">航行区域</div>
+                        <div field="radius" width="120" headerAlign="center" allowSort="true">备注</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right" style="width: 49%;float: right;height: 100%;">
+            <div class="mini-toolbar" style="border:0;padding:0px;height: 20px;line-height: 20px;">
+                船舶列表
+            </div>
+            <input id="shipSuggestUnitPrice" name="shipSuggestUnitPrice" class="mini-hidden" />
+            <div class="mini-toolbar" style="border-bottom:0;padding:0px;" id="shipListForm">
+                <input id="shipListParamFlag" name="queryParamFlag" value="1" class="mini-hidden" />
+                <input id="shipListKey" name="shipNo" class="mini-textbox" emptyText="请输入查询内容" style="width:150px;" />
+                <a class="mini-button" iconCls="icon-search" onclick="CapcitySchedul.funSearchShipListGrid()" plain="true"><label>查询</label></a>
+                <label style="font-size: 12px;color: #444;vertical-align: middle;"><input style="vertical-align: middle;" onchange="CapcitySchedul.funSearchShipListGrid()" type="checkbox" name="shipFlag" value="1" hideFocus/>自有船舶</label>
+                <label style="font-size: 12px;color: #444;vertical-align: middle;"><input style="vertical-align: middle;" onchange="CapcitySchedul.funSearchShipListGrid()" type="checkbox" name="shipFlag" value="2" hideFocus/>挂靠船舶</label>
+                <label style="font-size: 12px;color: #444;vertical-align: middle;"><input style="vertical-align: middle;" onchange="CapcitySchedul.funSearchShipListGrid()" type="checkbox" name="shipFlag" value="3" hideFocus/>临调船舶</label>
+            </div>
+            <div class="mini-fit">
+                <div id="shipListGrid" class="mini-datagrid" pagesize="10" sizeList="[10,30,50,100]" onload="CapcitySchedul.funShipListOnLoad" allowUnselect="true"
+                      idField="id" allowResize="false" showPager="true" allowAlternating="false"  sortMode="client" onlyCheckSelection="false" allowCellSelect="false" multiSelect="true" style="height: 100%;">
+                    <div property="columns">
+                        <div type="checkcolumn"></div>
+                        <div visible="false" name="ShipId" field="shipId" width="50" headerAlign="center" allowSort="true">船号</div>
+                        <div name="ShipNo" field="shipNo" width="100" headerAlign="center" allowSort="true">船号</div>
+                        <div name="ShipFlag" field="shipFlag" width="100" headerAlign="center" allowSort="true" renderer="CapcitySchedul.funShipFlagRenderer">船舶所有权</div>
+                        <div name="PreWeight" field="preWeight" width="100" headerAlign="center" allowSort="true">预报吨位</div>
+                        <div name="PreArriveTime" field="preArriveTime" width="120" headerAlign="center" allowSort="true" dateFormat="yyyy-MM-dd HH:mm:ss" renderer="PageMain.funFromDateInfo">预计到港时间</div>
+                        <div name="ArrivalPort" field="arrivalPort" width="100" headerAlign="center" allowSort="true">到达港口</div>
+                        <div name="ShipStatus" field="shipStatus" width="100" headerAlign="center" allowSort="true">船舶状态</div>
+                        <div name="Position" field="position" width="80" headerAlign="center" allowSort="true">位置</div>
+                        <div name="Captain" field="captain" width="80" headerAlign="center" allowSort="true">船长</div>
+                        <div name="CombineMobile" field="combineMobile" width="100" headerAlign="center" allowSort="true">联系电话</div>
+                        <div name="SailArea" field="sailArea" width="100" headerAlign="center" allowSort="true">航行区域</div>
+                        <div name="Remarks" field="remarks" width="120" headerAlign="center" allowSort="true">备注</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div title="生成调度结果" region="south" showSplit="true" showSplitIcon="false" height="350" showHeader="false" style="border:0 none;">
+        <input id="leftWeight" name="leftWeight" value="" class="mini-hidden" />
+        <input id="hasLeftWeight" name="hasLeftWeight" value="" class="mini-hidden" />
+        <input id="totalLoad" name="totalLoad" value="" class="mini-hidden" />
+        <input id="_loadingTime" name="_loadingTime" value="" class="mini-hidden" />
+        <div class="mini-toolbar" style="border:0;padding:0px;height: 20px;line-height: 20px;">
+            生成调度结果
+        </div>
+        <div class="mini-fit" style="padding-bottom: 35px;">
+            <div id="orderDetailsGrid" class="mini-datagrid" idField="id" allowResize="false" allowAlternating="false"  sortMode="client"
+            allowCellEdit="true" allowCellSelect="true" editNextOnEnterKey="true" editNextRowCell="true" allowCellValid="true" onlyCheckSelection="true"
+            style="height: 100%;" oncellbeginedit="CapcitySchedul.funOnCellBeginEdit" oncellendedit="CapcitySchedul.funOnCellEndEdit"
+            ondrawcell="CapcitySchedul.funOnDrawCell" showSummaryRow="true" ondrawsummarycell="CapcitySchedul.funOnDrawSummaryCell"
+            oncellcommitedit="CapcitySchedul.funOnCellCommitEdit" showPager="false"  onload="CapcitySchedul.funOrderDetailsOnLoad">
+                <div property="columns">
+                    <div field="operate" width="80" headerAlign="center" allowSort="false" align="center" renderer="CapcitySchedul.funOrderOperRenderer">操作
+                    </div>
+                    <div visible="false" name="ShipId" field="shipId" width="50" headerAlign="center" allowSort="false">船id</div>
+                    <!-- <div name="ShipStatus" field="shipStatus" width="80" headerAlign="center" allowSort="false" renderer="CapcitySchedul.funShipStatusRenderer">调度状态</div> -->
+                    <div name="ShipNo" field="shipNo" width="100" headerAlign="center" allowSort="false">船号</div>
+                    <div name="ShipFlag" field="shipFlag" width="100" headerAlign="center" allowSort="false" renderer="CapcitySchedul.funShipTypeRenderer">船舶所有权</div>
+                    <div name="CombineMobile" field="combineMobile" width="100" headerAlign="center" allowSort="false">联系电话</div>
+                    <div name="PreWeight" vtype="required" field="preWeight" width="100" headerAlign="center" allowSort="false">预报吨位</div>
+                    <div name="ActualTransferPrice" vtype="required, float" field="actualTransferPrice" width="100" headerAlign="center" allowSort="false">船户实际运价
+                        <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100" />
+                    </div>
+                    <div name="PreLoad" vtype="required" field="preLoad" width="120" headerAlign="center" allowSort="false">预发吨位
+                        <input property="editor" class="mini-textbox" style="width:100%;" minWidth="120" />
+                    </div>
+                    <div name="PreArriveTime" vtype="required" field="preArriveTime" width="120" headerAlign="center" allowSort="false" dateFormat="yyyy-MM-dd HH:mm:ss"  renderer="CapcitySchedul.funOrderDetailsTimeRenderer">空船要求到港时间
+                        <input property="editor" class="mini-datepicker" format="yyyy-MM-dd HH:mm:ss" showTime="true" style="width:100%;" />
+                    </div>
+                    <div type="comboboxcolumn" vtype="required" autoShowPopup="true" name="SettleType" field="settleType" width="120" headerAlign="center" allowSort="false">结算吨位方式
+                        <input property="editor" class="mini-combobox" style="width:100%;" data="SettleTypes" />
+                    </div>
+                    <div type="comboboxcolumn" vtype="required" autoShowPopup="true" name="Status" field="status" width="120" headerAlign="center" allowSort="false">调度状态
+                        <input property="editor" class="mini-combobox" style="width:100%;" data="DispatchStatus" onvaluechanged="CapcitySchedul.funChangeStatus()" />
+                    </div>
+                    <div field="localstatus" width="120" headerAlign="center" visible="false" allowSort="true" renderer="CapcitySchedul.funStatusRenderer">状态</div>
+                    <div name="PreSettleAmount" vtype="required" field="preSettleAmount" width="120" headerAlign="center" allowSort="false">预结算金额</div>
+                </div>
+                <script type="text/javascript">
+                    var SettleTypes = [{id: 11, text: '实发吨位现金结算'}, {id: 12, text: '实发吨位定期结算'}, {id: 21, text: '实收吨位现金结算'}, {id: 22, text: '实收吨位定期结算'}];
+                    var DispatchStatus = [{id: -1, text: '未调度'}, {id: 0, text: '已调度'}, {id: 1, text: '已到位', enabled:false}, {id: 2, text: '已装货', enabled:false}, {id: 3, text: '运输中', enabled:false}, {id: 4, text: '已到港', enabled:false}, {id: 5, text: '已卸货', enabled:false}, {id: 6, text: '已完成', enabled:false}];
+                </script>
+            </div>
+        </div>
+        <div class="mini-toolbar" style="position: fixed;left:0;bottom: 0;right:0;text-align: center;border-width: 1px 0 0 0" >
+            <a class="mini-button cursor" iconCls="icon-save" onclick="CapcitySchedul.funSubmitData()">保存</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

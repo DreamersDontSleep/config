@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>明天健康体检后台管理系统</title>
+    <link href="../../jslib/theme/sea/mainframe.css" rel="stylesheet" type="text/css"/>
+    <link href="../../jslib/miniui/themes/self/common.css" rel="stylesheet" type="text/css"/>
+    <link href="../../jslib/scroll/jquery.mCustomScrollbar.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="../jk/themes/self/showImg.css">
+    <script src="../../jslib/miniui/boot.js"></script>
+    <script src="../../jslib/scroll/jquery.mCustomScrollbar.js"></script>
+    <script type="text/javascript" src="../jk/js/showImg.js"></script>
+    <style>
+        *{
+            padding:0;
+        }
+        ol{
+            cursor: pointer;
+        }
+        .nav1,.nav2,.nav3{
+            display:none;
+        }
+        ol>li{
+            transition: background 0.6s;
+            color:#ffffff;
+            margin: 1px 0px;
+            background: rgba(6, 83, 171, 0.9);
+            list-style-type: none;
+            font-size: 16px;
+            text-align: center;
+        }
+        ol>li>div:hover{
+            background: #43AAD7;
+        }
+        .nav1>li {
+            background: #356cc1;
+            display: block;
+            line-height: 30px;
+            transition: color 0.6s;
+        }
+        img{
+            margin-left:10px;
+            margin-bottom:-2px;
+        }
+        .nav1 li{
+            padding:4px 0;
+            font-size: 14px;
+        }
+        .nav1 li:hover{
+            background: #43AAD7;
+        }
+        .current{
+            background: #43AAD7 !important;
+        }
+        #menudiv {
+            background:rgba(6, 83, 171, 0.9);
+        }
+        .sysTitle {
+            font-size: 24px;
+            line-height: 48px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            cursor: default;
+            color: #fff;
+            padding: 0 30px;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body style="margin:0;padding:0;overflow:hidden;">
+<table id="toptab" style="background:rgba(6, 83, 171, 0.9)">
+    <tbody>
+    <tr>
+        <td id="top_left" style="height:48px;width:530px;">
+            <span class="sysTitle">明天健康体检后台管理系统</span>
+        </td>
+        <td id="top_sys"></td>
+        <td id="top_right" style="height:100%;width:130px;">
+            <div id="user">
+                <div class="user-logo"></div>
+                <b id="jt"></b>
+                <div class="user-info">
+                    <input type="hidden" value="" id="lesuserid">
+                    <p id="username"></p>
+                    <p id="realname"></p>
+                </div>
+                <div class="userid">
+                    <ul id="userManage">
+                        <li class="config" onclick="PageHome.funOpenModify()">修改密码</li>
+                        <li id="exit">退出</li>
+                    </ul>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div id="menubar"  style="position:absolute;top:0;left:0;z-index:1;width:1px;height:1px;overflow:hidden;">
+</div>
+<div class="menu_change menu_open" data-state="0" style="display:none;">
+</div>
+<div id="menudiv"
+     style="position:absolute;top:0;left:0;z-index:1;width:1px;height:1px;overflow:hidden;overflow-y:auto;border-right:1px solid #ccc;">
+    <div class="menu_container">
+        <ol id="menuflag">
+           <!-- <li class="pli">
+                <div style="padding: 6px 0;">
+                    <span id="span1">基础信息管理</span>
+                    <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">
+                </div>
+                <ul class="nav1">
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/customer.html')">客户信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/contract.html')">合同信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/port.html')">港口信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/ship.html')">船舶信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/shipStaff.html')">船舶人员管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/tempDispatchShip.html')">临调船舶管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/flow.html')">流向信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/waterLevel.html')">水位信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/dangerZoneSpeed.html')">危险速度管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/dangerZone.html')">危险区域管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/shipEvent.html')">船舶事件管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/msgTemplate.html')">消息模板管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/transferPrice.html')">运价信息管理1</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/staffSign.html')">签到信息查看</li>
+                </ul>
+            </li>
+            <li class="pli">
+                <div style="padding: 6px 0;">
+                    <span id="span1">客户任务管理</span>
+                    <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">
+                </div>
+                <ul class="nav1">
+                    <li onclick="PageHome.funAddTab(this, '../khrw/customerTask.html')">客户下单管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../jk/capacityScheduling.html')">运力调度管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../baseinfo/leftDispatchInfo.html')">临调发布管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../khrw/sailingInfo.html')">航次信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../khrw/xxx.html')">磅差信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../khrw/xxx.html')">客户任务查看</li>
+                </ul>
+            </li>
+            <li class="pli">
+                <div style="padding: 6px 0;">
+                    <span id="span1">船舶监控管理</span>
+                    <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">
+                </div>
+                <ul class="nav1">
+                    <li onclick="PageHome.funAddTab(this, '../jk/real.html')">船舶实时监控</li>
+                </ul>
+            </li>
+            <li class="pli">
+                <div style="padding: 6px 0;">
+                    <span id="span1">抢单app管理</span>
+                    <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">
+                </div>
+                <ul class="nav1">
+                    <li onclick="PageHome.funAddTab(this, '../jk/grabinfoList.html')">抢单信息审核</li>
+                    <li onclick="PageHome.funAddTab(this, '../jk/xxx.html')">抢单信息查看</li>
+                    <li onclick="PageHome.funAddTab(this, '../jk/xxx.html')">用户信息查看</li>
+                </ul>
+            </li>-->
+            <li class="pli">
+                <div style="padding: 6px 0;">
+                    <span id="span1">系统信息管理</span>
+                    <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">
+                </div>
+                <ul class="nav1">
+                    <li onclick="PageHome.funAddTab(this, '../systeminfo/userProfile.html')">用户信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../systeminfo/roles.html')">角色信息管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../systeminfo/dataDictionary.html')">数据字典管理</li>
+                    <li onclick="PageHome.funAddTab(this, '../systeminfo/actionResources.html')">权限信息管理</li>
+                </ul>
+            </li>
+            <li class="pli">
+                <div style="padding: 6px 0;">
+                    <span>预约体检管理</span>
+                    <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">
+                </div>
+                <ul class="nav1">
+                    <li onclick="PageHome.funAddTab(this, '../yytjmanagement/yytjBatchImport.html')">体检预约批量导入</li>
+                </ul>
+            </li>
+            <li class="pli">
+                <div style="padding: 6px 0;">
+                    <span>体检报告管理</span>
+                    <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">
+                </div>
+                <ul class="nav1">
+                    <li onclick="PageHome.funAddTab(this, '../tjbgmanagement/tjbgBatchImport.html')">体检报告批量导入</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div id="pagediv" style="position:absolute;z-index:2;width:100%;height:100%;overflow:hidden;">
+    <div id="pageTabs" class="mini-tabs" activeIndex="0" style="width:100%;height:100%; " plain="true">
+    </div>
+</div>
+</body>
+
+<script>
+    var PageHome = {
+        menuFlag:true,
+        menuText : "",
+        menuArg : [],
+        menuFly : [],
+        init : function()
+        {
+            this.menu_state = 1;
+            var me = this;
+            $(window).resize(function(){
+                me.funResize();
+            });
+
+
+            me.funResize();
+
+            //左边菜单栏是否收起来
+            $('.menu_change').on('click', function (e) {
+                var $this = $(this);
+                var state = $this.attr("data-state");
+                me.menu_state = state;
+                if (state == "1") {
+                    $this.removeClass('menu_close').addClass('menu_open');
+                    $this.attr("data-state", "0");
+                } else {
+                    $this.attr("data-state", "1");
+                    $this.removeClass('menu_open').addClass('menu_close');
+                }
+                //$(window).resize();
+                me.funResize();
+            });
+
+
+            $("#userManage,.user-logo").bind("mouseover", function(){
+                PageHome.menuFlag = false;
+            });
+            $("#userManage,.user-logo").bind("mouseout", function(){
+                PageHome.menuFlag = true;
+                PageHome.funMenuInfo();
+            });
+            $(".user-logo").bind("click", function(){
+                $("#userManage").show();
+                $("#jt").css("display", "inline");
+                PageHome.funMenuInfo();
+            });
+            $("#exit").bind("click", function(){
+                $.cookie('token', null, { expires: -1, path: '/' });
+                window.location.href = PageMain.funGetRootPath() + "/pages/login/login.html";
+            });
+            $(".menu_container").mCustomScrollbar();
+        },
+        funInit : function(){
+            $(".pli div").bind("click", function(){
+
+                if(PageHome.menuText != $(this).text())
+                {
+                    PageHome.menuText = $(this).text();
+                    $(".pli").find("div").each(function () {
+                        $(this).parent().find("ul").hide();
+                        $(this).attr("tag", false);
+                        $(this).find(".ge_img").attr("src", "../../jslib/theme/sea/images/next_0.png");
+                    });
+                }
+
+                if($(this).attr("tag") == "true")
+                {
+                    $(this).attr("tag", false);
+                    $(this).parent().find("ul").hide();
+                    $(this).find(".ge_img").attr("src", "../../jslib/theme/sea/images/next_0.png");
+                }
+                else
+                {
+                    $(this).attr("tag", true);
+                    $(this).find(".ge_img").attr("src", "../../jslib/theme/sea/images/next_1.png");
+                    $(this).parent().find("ul").show();
+                }
+            });
+            $(".nav1 li").bind("click", function(){
+                $(".nav1 li").removeClass("current");
+                $(this).addClass("current");
+            });
+        },
+        funMenuInfo : function()
+        {
+            window.setTimeout(function(){
+                if(PageHome.menuFlag)
+                {
+                    $("#userManage").hide();
+                    $("#jt").css("display", "none");
+                }
+            },1000);
+        },
+        funGetUserInfo: function()
+        {
+            var token = $.cookie('token');
+            if (token != undefined && token != null ) {
+                PageMain.callAjax(PageMain.defaultOption.httpUrl + "/xyUser/info", {"token": token}, function (data) {
+                    if (data.success)
+                    {
+                        var result = data.data;
+                        $('#username').html(result.profile.nickName);
+                        $('#realname').html(result.profile.realName);
+                        PageHome.funDealResourcesInfo(result.resources);
+                    }
+                    else
+                    {
+                        PageMain.funShowMessageBox(data.msg);
+                    }
+                });
+            }
+        },
+        funDealResourcesInfo : function (resFly)
+        {
+            PageHome.menuArg = resFly;
+            resFly.forEach(function (obj) {
+               if (obj.parentId == 0)
+               {
+                   var menuObj = {id : obj.id, parentHtml:null, childHtml:[]};
+                   menuObj.parentHtml = ' <div style="padding: 6px 0;"> <span id="span1">'+obj.name+'</span> <img class="ge_img" src="../../jslib/theme/sea/images/next_0.png" style="float: right;padding:6px;">  </div>';
+                   PageHome.menuFly.push(menuObj);
+               }
+               else if (obj.type == 1)
+               {
+                   PageHome.menuFly.forEach(function (menu) {
+                        if (menu.id == obj.parentId)
+                        {
+                            menu.childHtml.push('<li name="'+obj.id+'" onclick="PageHome.funAddTab(this, \''+obj.url+'\')">'+obj.name+'</li>');
+                        }
+                   });
+               }
+            });
+            PageHome.funCreateMenuInfo();
+        },
+        funCreateMenuInfo : function ()
+        {
+            var menuArgs = "";
+            PageHome.menuFly.forEach(function (menu) {
+                menuArgs += '<li class="pli">' + menu.parentHtml +
+
+                        '<ul class="nav1">' + menu.childHtml.join("") +
+                        '</ul></li>';
+            });
+            // $("#menuflag").append(menuArgs);
+            PageHome.funInit();
+        },
+        funOpenModify : function ()
+        {
+            var me = this;
+            mini.open({
+                url: PageMain.funGetRootPath() + "/pages/systeminfo/modifySelfPwd.html",
+                title: "修改密码",
+                width: 600,
+                height: 200,
+                onload:function(){
+
+                },
+                ondestroy:function(action){
+
+                }
+            })
+        },
+        funResize : function()
+        {
+            var menu_width = 193;
+            var top_height = $("#toptab").height();
+            var window_height = $(window).height();
+            var window_width = $(window).width();
+
+            $(".menu_change").show();
+            if (this.menu_state == 1) {
+                $('#menubar').css({top: top_height, left: 0, width: '6px', height: window_height + 'px'});
+                $("#menudiv").css({
+                    "width":menu_width,
+                    "height":window_height - top_height,
+                    "top":top_height+1
+                });
+
+                $('#pagediv').css({
+                    top: top_height,
+                    left: (menu_width + 6) + 'px',
+                    width: (window_width - menu_width - 6 - 1) + 'px',
+                    height: (window_height - top_height) + 'px'
+                });
+                $('#menudiv').show();
+                $(".menu_change").css({left: menu_width});
+            }
+            else
+            {
+                $('#menubar').css({top: top_height, left: 0, width: '16px', height: window_height + 'px'});
+                $('#menudiv').hide();
+                $('.menu_change').show();
+                $(".menu_change").css({left: 0});
+                $('#pagediv').css({
+                    top: top_height,
+                    left: '16px',
+                    width: (window_width - 16 - 1) + 'px',
+                    height: (window_height - top_height) + 'px'
+                });
+            }
+            $(".menu_change").css({height: $('#menudiv').height()});
+            $(".menu_change").css({"line-height": $('#menudiv').height()});
+            mini.parse();
+        },
+        funAddTab : function(obj, strUrl){
+            var pageTabs = mini.get("pageTabs");
+            var tab = pageTabs.getTab($(obj).text());
+            if(!tab)
+            {
+                tab = { title: $(obj).text(), name:$(obj).text(), url: strUrl, showCloseButton: true };
+                pageTabs.addTab(tab);
+                pageTabs.loadTab(strUrl, tab, function () {
+                    var operFly = ["保存", "取消","增加","删除","修改","设置角色","设置权限"];
+                    PageHome.menuArg.forEach(function (menu) {
+                        if(menu.parentId == $(obj).attr("name"))
+                        {
+                            operFly.push(menu.name);
+                        }
+                    })
+                    var iframe = pageTabs.getTabIFrameEl(tab);
+                    iframe.contentWindow.PageMain.funDealMenuInfo(operFly);
+                });
+            }
+            pageTabs.activeTab(tab);
+        }
+    };
+
+    $(function(){
+        PageHome.init();
+        PageHome.funGetUserInfo();
+    })
+
+</script>
+</html>

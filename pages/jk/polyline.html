@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="themes/self/map.css" type="text/css">
+    <script src="../../jslib/miniui/boot.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=94iK6uYDWx7AV4FbrPaQDtRp8uBHWIoA"></script>
+    <script type="text/javascript" src="js/mapbaidu/DrawingManager_min.js"></script>
+    <script type="text/javascript" src="js/mapbaidu/bdtowgs84.js"></script>
+    <link rel="stylesheet" id="mainCss" href="js/mapbaidu/DrawingManager_min.css" type="text/css">
+    <title>地图展示</title>
+</head>
+<body>
+<div id="allmap"></div>
+<div id="rightdiv">
+    <div class="poititle">POI检索</div>
+    <div style="padding: 5px;">
+        <input type="text" id="in_poi"/>
+        <input type="button" value="查询" onclick="PageLine.funSearchPoi()"/>
+    </div>
+    <div id="lmap-result">
+
+    </div>
+</div>
+
+<span class="btn_op" onclick="PageLine.funOk()">保存</span>
+<!--<span class="btn_op" onclick="PageLine.funCreatePolyLine(0)" style=" right: 390px;">画线</span> 445-->
+<span class="btn_op" onclick="PageLine.funCreatePolyLine(1)" style=" right: 390px;">画电子围栏</span>
+</body>
+</html>
+<script type="text/javascript">
+    var PageLine = function()
+    {
+        return {
+            defaultOption:
+            {
+                basePath : "",
+                mapDiv : "",
+                mapObj : null,
+                mAutocomplete : null,
+                polylineOverlay:null,
+                polylineFly : []
+            },
+
+            //初始化地图
+            init : function (mapdiv)
+            {
+                this.mapObj = new BMap.Map(mapdiv);
+
+                // 初始化地图,设置中心点坐标和地图级别
+                //this.mapObj.centerAndZoom(new BMap.Point(116.404, 39.915), 11);
+                this.mapObj.centerAndZoom("长兴",15);
+                this.mapObj.addControl(new BMap.MapTypeControl({
+                    mapTypes:[
+                        BMAP_NORMAL_MAP,
+                        BMAP_HYBRID_MAP
+                    ]}));
+                // 设置地图显示的城市 此项是必须设置的
+                this.mapObj.setCurrentCity("长兴");
+                //开启鼠标滚轮缩放
+                this.mapObj.enableScrollWheelZoom(true);
+                this.mapObj.enableDragging();
+
+                // 添加带有定位的导航控件
+                var navigationControl = new BMap.NavigationControl({
+                    // 靠左上角位置
+                    anchor: BMAP_ANCHOR_TOP_LEFT,
+                    // LARGE类型
+                    type: BMAP_NAVIGATION_CONTROL_LARGE,
+                    // 启用显示定位
+                    enableGeolocation: true
+                });
+
+                this.defaultOption.mAutocomplete =  new BMap.Autocomplete({"input" : "in_poi"
+                    ,"location" : PageLine.mapObj
+                });
+                this.defaultOption.mAutocomplete.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+                    var str = "";
+                    var _value = e.fromitem.value;
+                    var value = "";
+                    if (e.fromitem.index > -1) {
+                        value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+                    }
+                    str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+                    value = "";
+                    if (e.toitem.index > -1) {
+                        _value = e.toitem.value;
+                        value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+                    }
+                    str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+                    document.getElementById("in_poi").innerHTML = str;//(str);
+                });
+
+                var myValue;
+                this.defaultOption.mAutocomplete.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+                    var _value = e.item.value;
+                    myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+                    document.getElementById("in_poi").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+                });
+                this.mapObj.addControl(navigationControl);
+            },
+            funSetData : function (data)
+            {
+                if(data.coordinate != "")
+                {
+                    var pointFly = [];
+                    var pArgs = data.coordinate.split(";");
+                    for(var nItem=0; nItem<pArgs.length; nItem++)
+                    {
+                        var tmpFly = pArgs[nItem].split(",");
+                        var pfly = PageConvert.funWGS84ToBaidu(tmpFly[0]/1000000, tmpFly[1]/1000000);
+                        pointFly.push(new BMap.Point(pfly[0], pfly[1]));
+                    }
+                    var polyLine = new BMap.Polyline(pointFly, {strokeColor:"blue", strokeWeight:6, strokeOpacity:0.4});
+                    PageLine.mapObj.addOverlay(polyLine);
+                    PageLine.defaultOption.polylineOverlay = polyLine;
+                    window.setTimeout(function () {
+                        PageLine.mapObj.centerAndZoom(pointFly[0], 13);
+                    }, 500);
+                }
+            },
+            funSearchPoi : function ()
+            {
+                var local = new BMap.LocalSearch(this.mapObj, {
+                    renderOptions: {map: this.mapObj, panel: "lmap-result"}
+                });
+                local.search($("#in_poi").val());
+            },
+            funOk : function ()
+            {
+                if (this.defaultOption.polylineFly.length > 0)
+                {
+                    var argFlys = [];
+                    for (var nItem = 0; nItem < this.defaultOption.polylineFly.length; nItem ++)
+                    {
+                        var pfly = PageConvert.funBaiduToWGS84(this.defaultOption.polylineFly[nItem].lng, this.defaultOption.polylineFly[nItem].lat);
+                        argFlys.push(parseInt(pfly[0] * 1000000) + "," + parseInt(pfly[1] * 1000000));
+                    }
+                    PageMain.funCloseWindow({oper:"ok", lnglats:argFlys.join(";")});
+                }
+                else
+                {
+                    PageMain.funCloseWindow("close");
+                }
+            },
+            //0画线；1画电子围栏
+            funCreatePolyLine : function(paramType)
+            {
+                this.mapObj.removeOverlay(this.defaultOption.polylineOverlay);
+
+                var drawingManager = new BMapLib.DrawingManager(this.mapObj, {
+                    isOpen: true, //是否开启绘制模式
+                    enableDrawingTool: false, //是否显示工具栏
+                    drawingToolOptions: {
+                        anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+                        offset: new BMap.Size(5, 5), //偏离值
+                        scale: 0.8, //工具栏缩放比例
+                        drawingModes : [
+                            BMAP_DRAWING_POLYLINE
+                        ]
+                    }
+                });
+                drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
+                var me = this;
+                drawingManager.addEventListener('polylinecomplete', function(e, overlay) {
+                    var pointFly = e.getPath();
+                    if (paramType == 1)
+                    {
+                        pointFly.push( e.getPath()[0]);
+                    }
+                    console.log(pointFly)
+                    me.defaultOption.polylineFly = pointFly;
+                    drawingManager.close();
+                    me.mapObj.removeOverlay(overlay);
+                    var polyLine = new BMap.Polyline(pointFly, {strokeColor:"blue", strokeWeight:6, strokeOpacity:0.4});
+                    me.mapObj.addOverlay(polyLine);
+                    me.defaultOption.polylineOverlay = polyLine;
+
+                });
+            }
+        }
+    }();
+
+
+    $(function () {
+        PageLine.init("allmap");
+    })
+</script>
