@@ -13,7 +13,35 @@ var PageUserProfileAdd = function(){
             this.basePath = PageMain.basePath;
             this.userProfileForm = new mini.Form("userProfileFormAdd");
             mini.get("gender").setData([{id:0,name:"未知"},{id:1, name:"男"},{id:2, name:"女"}]);
-            mini.get("department").setData([{id:1, name:"市场部"},{id:2, name:"运营部"}])
+			var dep = [{id:1, name:"南京"},{id:2, name:"如东"},{id:4, name:"青岛"},{id:5, name:"青岛2"}];
+			$.ajax({
+				url :"http://fcpgpre.jstspg.com/auth/dataDictionary/getTreeSp",
+				type : 'get',
+				data : {},
+				dataType: 'json',
+				success: function (data)
+				{
+					var depData = data.data.fgs;
+					var depArr = [];
+					for(var i = 0; i < depData.length; i++){
+						var obj = {id: '',name: ''};
+						$.each(depData[i],function(j){
+							console.log(j)
+							console.log(depData[i][j])
+							obj.id = depData[i][j][0].value;
+							obj.name = depData[i][j][1].value;
+							depArr.push(obj);
+						})
+					}
+					console.log(depArr)
+					mini.get("department").setData(depArr)
+				},
+				error: function (jqXHR, textStatus, errorThrown)
+				{
+				    PageMain.funShowMessageBox("操作出现异常");
+				}
+			})
+            
         },
         funSetData : function(data)
         {
@@ -44,7 +72,7 @@ var PageUserProfileAdd = function(){
             var me = this;
 			// console.log(me);
             var obj = this.userProfileForm.getData(true);
-			alert(obj);
+			console.log(obj);
 			alert(me.action);
             $.ajax({
                 url : PageMain.defaultOption.httpUrl + "/xyUser/" + me.action + "?a="+Math.random(),
