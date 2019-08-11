@@ -14,11 +14,16 @@ var PageUserProfileAdd = function(){
             this.userProfileForm = new mini.Form("userProfileFormAdd");
             mini.get("gender").setData([{id:0,name:"未知"},{id:1, name:"男"},{id:2, name:"女"}]);
 			var dep = [{id:1, name:"南京"},{id:2, name:"如东"},{id:4, name:"青岛"},{id:5, name:"青岛2"}];
+			console.log($.cookie('token'))
 			$.ajax({
-				url :"http://fcpgpre.jstspg.com/auth/dataDictionary/getTreeSp",
+				// url :"http://fcpgpre.jstspg.com/auth/dataDictionary/getTreeSp",
+				url: PageMain.defaultOption.httpUrl + "/dataDictionary/getTreeSp/" + "?a="+Math.random(),
 				type : 'get',
-				data : {},
-				dataType: 'json',
+				headers:("token", $.cookie('token')),
+				data : {
+					page: 1,
+					pageSize:5000
+				},
 				success: function (data)
 				{
 					var depData = data.data.fgs;

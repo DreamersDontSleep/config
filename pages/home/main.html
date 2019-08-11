@@ -416,7 +416,7 @@
                 tab = { title: $(obj).text(), name:$(obj).text(), url: strUrl, showCloseButton: true };
                 pageTabs.addTab(tab);
                 pageTabs.loadTab(strUrl, tab, function () {
-                    var operFly = ["保存", "取消","增加","删除","修改","设置角色","设置权限"];
+                    var operFly = ["保存", "取消","增加","删除","修改","设置角色","设置权限","增加根级节点","增加下级节点"];
                     PageHome.menuArg.forEach(function (menu) {
                         if(menu.parentId == $(obj).attr("name"))
                         {
