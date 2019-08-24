@@ -68,7 +68,9 @@ var PageUserProfile = function(){
         funOpenInfo : function(paramData)
         {
             var me = this;
+			console.log(paramData)
             paramData.row.dataDictFly = this.defaultOption.dataDictFly;
+			console.log(this.defaultOption)
             mini.open({
                 url: PageMain.funGetRootPath() + "/pages/systeminfo/userProfile_add.html",
                 title: paramData.title,
@@ -130,7 +132,7 @@ var PageUserProfile = function(){
                     if (action == "ok")
                     {
                         $.ajax({
-                            url : PageMain.defaultOption.httpUrl + "/user/del",
+                            url : PageMain.defaultOption.httpUrl + "/xyUser/delUser",
                             type: 'POST',
                             data: row,
                             dataType: 'json',

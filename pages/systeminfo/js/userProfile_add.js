@@ -31,14 +31,14 @@ var PageUserProfileAdd = function(){
 					for(var i = 0; i < depData.length; i++){
 						var obj = {id: '',name: ''};
 						$.each(depData[i],function(j){
-							console.log(j)
-							console.log(depData[i][j])
+							// console.log(j)
+							// console.log(depData[i][j])
 							obj.id = depData[i][j][0].value;
 							obj.name = depData[i][j][1].value;
 							depArr.push(obj);
 						})
 					}
-					console.log(depArr)
+					// console.log(depArr)
 					mini.get("department").setData(depArr)
 				},
 				error: function (jqXHR, textStatus, errorThrown)
@@ -78,7 +78,7 @@ var PageUserProfileAdd = function(){
 			// console.log(me);
             var obj = this.userProfileForm.getData(true);
 			console.log(obj);
-			alert(me.action);
+			// alert(me.action);
             $.ajax({
                 url : PageMain.defaultOption.httpUrl + "/xyUser/" + me.action + "?a="+Math.random(),
                 type : 'POST',
